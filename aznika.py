@@ -8,9 +8,14 @@ st.set_page_config(page_title="Aznikaa AI", page_icon="🤖", layout="wide")
 st.title("🤖 Welcome to Aznikaa AI")
 st.caption("Your Free AI Assistant for IT, Education & Entertainment")
 
+# Fetch API Key from Streamlit Secrets or Sidebar
+api_key = st.secrets.get("GEMINI_API_KEY", "")
+
 # Sidebar Configuration
 st.sidebar.title("⚙️ Aznikaa AI Settings")
-api_key = st.sidebar.text_input("Enter your Free API Key:", type="password")
+
+if not api_key:
+    api_key = st.sidebar.text_input("Enter your Free API Key:", type="password")
 
 # Category Selection
 mode = st.sidebar.radio(
@@ -30,19 +35,19 @@ user_query = st.text_area("Ask Aznikaa AI anything:", height=150, placeholder="T
 
 if st.button("🚀 Ask Aznikaa AI"):
     if not api_key:
-        st.error("⚠️ Baraye meherbani pehle Sidebar mein apni API Key daalein!")
+        st.error("⚠️ Baraye meherbani pehle Sidebar mein apni API Key daalein aur Enter press karein!")
     elif not user_query.strip():
         st.warning("⚠️ Baraye meherbani koi sawal ya prompt enter karein!")
     else:
         with st.spinner("Aznikaa AI is thinking..."):
             try:
                 # Configure Gemini API
-                genai.configure(api_key=api_key)
+                genai.configure(api_key=api_key.strip())
                 
-                # Updated Model Name
+                # Model Setup
                 model = genai.GenerativeModel('gemini-1.5-flash-latest')
                 
-                # Custom System Prompts based on selected category
+                # Custom System Prompts
                 if mode == "💻 IT & Coding Helper":
                     prompt = f"You are Aznikaa AI, an expert IT instructor. Explain concepts clearly, write clean code, or fix bugs for: {user_query}"
                 elif mode == "📚 Education & Notes Tutor":
