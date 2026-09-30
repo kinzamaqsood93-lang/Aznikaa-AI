@@ -1,5 +1,5 @@
 import streamlit as st
-from google import genai
+import google.generativeai as genai
 
 # Page Configuration
 st.set_page_config(page_title="Aznikaa AI", page_icon="🤖", layout="wide")
@@ -31,13 +31,14 @@ user_query = st.text_area("Ask Aznikaa AI anything:", height=150, placeholder="T
 
 if st.button("🚀 Ask Aznikaa AI"):
     if not api_key:
-        st.error("⚠️ Backend API Key configuration missing! Please add GEMINI_API_KEY in Secrets.")
+        st.error("⚠️ Backend API Key setup nahi hua! Streamlit Secrets mein GEMINI_API_KEY add karein.")
     elif not user_query.strip():
         st.warning("⚠️ Baraye meherbani koi sawal ya prompt enter karein!")
     else:
         with st.spinner("Aznikaa AI is thinking..."):
             try:
-                client = genai.Client(api_key=api_key.strip())
+                genai.configure(api_key=api_key.strip())
+                model = genai.GenerativeModel('gemini-1.5-flash-latest')
                 
                 if mode == "💻 IT & Coding Helper":
                     prompt = f"You are Aznikaa AI, an expert IT instructor. Explain concepts clearly, write clean code, or fix bugs for: {user_query}"
@@ -46,10 +47,7 @@ if st.button("🚀 Ask Aznikaa AI"):
                 else:
                     prompt = f"You are Aznikaa AI, a fun, friendly, and witty companion. Provide funny stories, jokes, or creative chat for: {user_query}"
 
-                response = client.models.generate_content(
-                    model='gemini-2.5-flash',
-                    contents=prompt
-                )
+                response = model.generate_content(prompt)
                 
                 st.success("Aznikaa AI Response:")
                 st.write(response.text)
