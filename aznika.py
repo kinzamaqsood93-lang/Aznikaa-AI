@@ -1,5 +1,5 @@
 import streamlit as st
-import google.generativeai as genai
+from google import genai
 
 # Page Configuration
 st.set_page_config(page_title="Aznikaa AI", page_icon="🤖", layout="wide")
@@ -8,16 +8,12 @@ st.set_page_config(page_title="Aznikaa AI", page_icon="🤖", layout="wide")
 st.title("🤖 Welcome to Aznikaa AI")
 st.caption("Your Free AI Assistant for IT, Education & Entertainment")
 
-# Fetch API Key from Streamlit Secrets or Sidebar
+# Fetch API Key automatically from Streamlit Secrets
 api_key = st.secrets.get("GEMINI_API_KEY", "")
 
-# Sidebar Configuration
+# Category Selection Sidebar
 st.sidebar.title("⚙️ Aznikaa AI Settings")
 
-if not api_key:
-    api_key = st.sidebar.text_input("Enter your Free API Key:", type="password")
-
-# Category Selection
 mode = st.sidebar.radio(
     "Choose Service / Category:",
     [
@@ -35,19 +31,14 @@ user_query = st.text_area("Ask Aznikaa AI anything:", height=150, placeholder="T
 
 if st.button("🚀 Ask Aznikaa AI"):
     if not api_key:
-        st.error("⚠️ Baraye meherbani pehle Sidebar mein apni API Key daalein aur Enter press karein!")
+        st.error("⚠️ Backend API Key configuration missing! Please add GEMINI_API_KEY in Secrets.")
     elif not user_query.strip():
         st.warning("⚠️ Baraye meherbani koi sawal ya prompt enter karein!")
     else:
         with st.spinner("Aznikaa AI is thinking..."):
             try:
-                # Configure Gemini API
-                genai.configure(api_key=api_key.strip())
+                client = genai.Client(api_key=api_key.strip())
                 
-                # Model Setup
-                model = genai.GenerativeModel('gemini-1.5-flash-latest')
-                
-                # Custom System Prompts
                 if mode == "💻 IT & Coding Helper":
                     prompt = f"You are Aznikaa AI, an expert IT instructor. Explain concepts clearly, write clean code, or fix bugs for: {user_query}"
                 elif mode == "📚 Education & Notes Tutor":
@@ -55,10 +46,11 @@ if st.button("🚀 Ask Aznikaa AI"):
                 else:
                     prompt = f"You are Aznikaa AI, a fun, friendly, and witty companion. Provide funny stories, jokes, or creative chat for: {user_query}"
 
-                # Fetch AI response
-                response = model.generate_content(prompt)
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash',
+                    contents=prompt
+                )
                 
-                # Display output
                 st.success("Aznikaa AI Response:")
                 st.write(response.text)
             except Exception as e:
