@@ -38,7 +38,9 @@ if st.button("🚀 Ask Aznikaa AI"):
             try:
                 # Configure Gemini API
                 genai.configure(api_key=api_key)
-                model = genai.GenerativeModel('gemini-1.5-flash')
+                
+                # Updated Model Name
+                model = genai.GenerativeModel('gemini-1.5-flash-latest')
                 
                 # Custom System Prompts based on selected category
                 if mode == "💻 IT & Coding Helper":
