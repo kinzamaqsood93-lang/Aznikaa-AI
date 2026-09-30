@@ -9,7 +9,7 @@ st.title("🤖 Welcome to Aznikaa AI")
 st.caption("Your Free AI Assistant for IT, Education & Entertainment")
 
 # Fetch API Key automatically from Streamlit Secrets
-api_key = st.sidebar.text_input("Enter your Free API Key:", type="password")
+api_key = st.secrets.get("GEMINI_API_KEY")
 # Category Selection Sidebar
 st.sidebar.title("⚙️ Aznikaa AI Settings")
 
