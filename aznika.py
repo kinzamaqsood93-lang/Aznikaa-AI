@@ -45,13 +45,13 @@ if st.button("🚀 Ask Aznikaa AI"):
                 else:
                     prompt = f"You are Aznikaa AI, a fun, friendly, and witty companion. Provide funny stories, jokes, or creative chat for: {user_query}"
 
-                response = model.generate_content(prompt)
-
-                st.success("Aznikaa AI Response:")
-                st.write(response.text)
-                except Exception as e:
-    error_msg = str(e).lower()
-    if "429" in error_msg or "quota" in error_msg:
-        st.warning("⏳ AI server busy hai. Baraye meharbani 30 seconds baad dubara message bhejein!")
-    else:
-        st.error(f"Error: {e}")
+                try:
+            response = model.generate_content(prompt)
+            st.success("Aznikaa AI Response:")
+            st.write(response.text)
+        except Exception as e:
+            error_msg = str(e).lower()
+            if "429" in error_msg or "quota" in error_msg:
+                st.warning("⏳ AI server busy hai. Baraye meharbani 30 seconds baad dubara message bhejein!")
+            else:
+                st.error(f"Error: {e}")
