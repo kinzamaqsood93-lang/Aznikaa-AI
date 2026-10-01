@@ -1,53 +1,34 @@
 import streamlit as st
 import requests
-import time
 
 st.title("Aznikaa AI")
 
-keys_raw = st.secrets.get("GEMINI_API_KEYS", "")
-api_keys = [k.strip() for k in keys_raw.split(",") if k.strip()]
+# Streamlit Secrets se single API key read ho rahi hai
+api_key = st.secrets.get("GEMINI_API_KEY")
 
-if not api_keys and st.secrets.get("GEMINI_API_KEY"):
-    api_keys = [st.secrets.get("GEMINI_API_KEY")]
-
-if not api_keys:
+if not api_key:
     st.error("API Key nahi mili! Streamlit Secrets check karein.")
 else:
     user_input = st.text_input("Aap ka sawal:")
 
     if st.button("Bhejein"):
         if user_input:
-            models_to_try = ["gemini-3.8-flash", "gemini-1.5-flash"]
-            success = False
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key={api_key}"
+            headers = {"Content-Type": "application/json"}
+            payload = {"contents": [{"parts": [{"text": user_input}]}]}
             
             with st.spinner("AI response generate kar raha hai..."):
-                for key in api_keys:
-                    for model in models_to_try:
-                        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
-                        headers = {"Content-Type": "application/json"}
-                        payload = {"contents": [{"parts": [{"text": user_input}]}]}
-                        
-                        response = requests.post(url, json=payload, headers=headers)
-                        
-                        if response.status_code == 200:
-                            data = response.json()
-                            answer = data['candidates'][0]['content']['parts'][0]['text']
-                            st.write("### AI ka Jawab:")
-                            st.write(answer)
-                            success = True
-                            break
-                        elif response.status_code == 429:
-                            # Direct key skip karke agli try karein
-                            continue
-                            
-                    if success:
-                        break
+                response = requests.post(url, json=payload, headers=headers)
                 
-                if not success:
-                    st.warning("⚠️ Daily Free Tier quota limit complete ho gayi hai. Kisi doosre Gmail account se nayi API Key bana kar Secrets mein update karein, ya thodi der baad try karein!")
+                if response.status_code == 200:
+                    data = response.json()
+                    answer = data['candidates'][0]['content']['parts'][0]['text']
+                    st.write("### AI ka Jawab:")
+                    st.write(answer)
+                else:
+                    st.error(f"Error {response.status_code}: {response.text}")
         else:
             st.warning("Pehle koi sawal toh likhein!")
-
 import streamlit.components.v1 as components
 
 # AdMob Banner Integration (Free Method)
