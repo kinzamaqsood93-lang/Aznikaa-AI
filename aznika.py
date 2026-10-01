@@ -49,7 +49,3 @@ if st.button("🚀 Ask Aznikaa AI"):
                 st.write(response.text)
             except Exception as err:
                 st.error(f"Error: {err}")
-                    st.write(response.text)
-                except Exception as e:
-                    st.error(f"Error: {e}")
-                st.error(f"Error: {e}")
