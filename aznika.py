@@ -1,7 +1,6 @@
 import streamlit as st
 import streamlit.components.v1 as components
 import requests
-import time
 
 st.title("Aznikaa AI")
 
@@ -14,34 +13,22 @@ else:
 
     if st.button("Bhejein"):
         if user_input:
-            # First preference gemini-3.8-flash hi rakhi hai
-            models_to_try = ["gemini-3.8-flash", "gemini-1.5-flash"]
-            success = False
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key={api_key}"
+            headers = {"Content-Type": "application/json"}
+            payload = {"contents": [{"parts": [{"text": user_input}]}]}
             
             with st.spinner("AI response generate kar raha hai..."):
-                for model in models_to_try:
-                    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
-                    headers = {"Content-Type": "application/json"}
-                    payload = {"contents": [{"parts": [{"text": user_input}]}]}
-                    
-                    try:
-                        response = requests.post(url, json=payload, headers=headers)
-                        if response.status_code == 200:
-                            data = response.json()
-                            answer = data['candidates'][0]['content']['parts'][0]['text']
-                            st.write("### AI ka Jawab:")
-                            st.write(answer)
-                            st.caption(f"Powered by: {model}")
-                            success = True
-                            break
-                        elif response.status_code in [503, 429]:
-                            time.sleep(1)
-                            continue
-                    except Exception:
-                        continue
-                
-                if not success:
-                    st.error("Server par abhi traffic zyada hai. Kuch seconds baad dobara try karein!")
+                try:
+                    response = requests.post(url, json=payload, headers=headers)
+                    if response.status_code == 200:
+                        data = response.json()
+                        answer = data['candidates'][0]['content']['parts'][0]['text']
+                        st.write("### AI ka Jawab:")
+                        st.write(answer)
+                    else:
+                        st.error(f"Error {response.status_code}: {response.text}")
+                except Exception as e:
+                    st.error(f"Connection error: {e}")
         else:
             st.warning("Pehle koi sawal toh likhein!")
 
