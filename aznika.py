@@ -1,9 +1,9 @@
 import streamlit as st
 import requests
+import time
 
 st.title("Aznikaa AI")
 
-# Streamlit Secrets se API Key read kar rahe hain
 api_key = st.secrets.get("GEMINI_API_KEY")
 
 if not api_key:
@@ -13,25 +13,29 @@ else:
 
     if st.button("Bhejein"):
         if user_input:
-            # Updated to gemini-3.8-flash as specified by user
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key={api_key}"
-            headers = {"Content-Type": "application/json"}
-            payload = {
-                "contents": [{
-                    "parts": [{"text": user_input}]
-                }]
-            }
+            models_to_try = ["gemini-3.8-flash", "gemini-1.5-flash"]
+            success = False
             
             with st.spinner("AI jawab likh raha hai..."):
-                response = requests.post(url, json=payload, headers=headers)
+                for model in models_to_try:
+                    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+                    headers = {"Content-Type": "application/json"}
+                    payload = {"contents": [{"parts": [{"text": user_input}]}]}
+                    
+                    response = requests.post(url, json=payload, headers=headers)
+                    
+                    if response.status_code == 200:
+                        data = response.json()
+                        answer = data['candidates'][0]['content']['parts'][0]['text']
+                        st.write("### AI ka Jawab:")
+                        st.write(answer)
+                        success = True
+                        break
+                    elif response.status_code == 429:
+                        continue  # Doosre model par switch karein agar rate limit aaye
                 
-                if response.status_code == 200:
-                    data = response.json()
-                    answer = data['candidates'][0]['content']['parts'][0]['text']
-                    st.write("### AI ka Jawab:")
-                    st.write(answer)
-                else:
-                    st.error(f"Error {response.status_code}: {response.text}")
+                if not success:
+                    st.error("Limit poori ho gayi hai. 1 minute baad try karein ya nayi API key daalein.")
         else:
             st.warning("Pehle koi sawal toh likhein!")
 
