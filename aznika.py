@@ -1,12 +1,17 @@
 import streamlit as st
 import requests
-import time
 
 st.title("Aznikaa AI")
 
-api_key = st.secrets.get("GEMINI_API_KEY")
+# Streamlit Secrets se keys extract kar rahe hain
+keys_raw = st.secrets.get("GEMINI_API_KEYS", "")
+api_keys = [k.strip() for k in keys_raw.split(",") if k.strip()]
 
-if not api_key:
+# Backup check agar purana single key variable name ho
+if not api_keys and st.secrets.get("GEMINI_API_KEY"):
+    api_keys = [st.secrets.get("GEMINI_API_KEY")]
+
+if not api_keys:
     st.error("API Key nahi mili! Streamlit Secrets check karein.")
 else:
     user_input = st.text_input("Aap ka sawal:")
@@ -17,25 +22,29 @@ else:
             success = False
             
             with st.spinner("AI jawab likh raha hai..."):
-                for model in models_to_try:
-                    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
-                    headers = {"Content-Type": "application/json"}
-                    payload = {"contents": [{"parts": [{"text": user_input}]}]}
-                    
-                    response = requests.post(url, json=payload, headers=headers)
-                    
-                    if response.status_code == 200:
-                        data = response.json()
-                        answer = data['candidates'][0]['content']['parts'][0]['text']
-                        st.write("### AI ka Jawab:")
-                        st.write(answer)
-                        success = True
+                # Har Key aur Har Model par automatic switch hoga
+                for key in api_keys:
+                    for model in models_to_try:
+                        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
+                        headers = {"Content-Type": "application/json"}
+                        payload = {"contents": [{"parts": [{"text": user_input}]}]}
+                        
+                        try:
+                            response = requests.post(url, json=payload, headers=headers)
+                            if response.status_code == 200:
+                                data = response.json()
+                                answer = data['candidates'][0]['content']['parts'][0]['text']
+                                st.write("### AI ka Jawab:")
+                                st.write(answer)
+                                success = True
+                                break
+                        except Exception:
+                            continue
+                    if success:
                         break
-                    elif response.status_code == 429:
-                        continue  # Doosre model par switch karein agar rate limit aaye
                 
                 if not success:
-                    st.error("Limit poori ho gayi hai. 1 minute baad try karein ya nayi API key daalein.")
+                    st.error("Tamam keys aur models ki limit filhal complete hai. Kuch der baad try karein!")
         else:
             st.warning("Pehle koi sawal toh likhein!")
 
