@@ -10,9 +10,9 @@ st.caption("Your Free AI Assistant for IT, Education & Entertainment")
 
 # Fetch API Key automatically from Streamlit Secrets
 api_key = st.secrets.get("GEMINI_API_KEY")
+
 # Category Selection Sidebar
 st.sidebar.title("⚙️ Aznikaa AI Settings")
-
 mode = st.sidebar.radio(
     "Choose Service / Category:",
     [
@@ -22,11 +22,8 @@ mode = st.sidebar.radio(
     ]
 )
 
-st.sidebar.markdown("---")
-st.sidebar.info("Aznikaa AI is 100% Free to use!")
-
-# User Input Section
-user_query = st.text_area("Ask Aznikaa AI anything:", height=150, placeholder="Type your code, question, or topic here...")
+# User Input Box
+user_query = st.text_area("Ask Aznikaa AI anything:", height=120)
 
 if st.button("🚀 Ask Aznikaa AI"):
     if not api_key:
@@ -34,21 +31,24 @@ if st.button("🚀 Ask Aznikaa AI"):
     elif not user_query.strip():
         st.warning("⚠️ Baraye meherbani koi sawal ya prompt enter karein!")
     else:
-            with st.spinner("Aznikaa AI is thinking..."):
-                try:
-                    genai.configure(api_key=api_key.strip())
-                    model = genai.GenerativeModel("gemini-3.8-flash")
-                    
-                    if mode == "💻 IT & Coding Helper":
-                        prompt = f"You are Aznikaa AI, an expert IT instructor. Explain concepts clearly, write clean code, or fix bugs for: {user_query}"
-                    elif mode == "📚 Education & Notes Tutor":
-                        prompt = f"You are Aznikaa AI, a patient academic tutor. Provide clear notes, step-by-step summaries, and easy explanations for: {user_query}"
-                    else:
-                        prompt = f"You are Aznikaa AI, a fun, friendly, and witty companion. Provide funny stories, jokes, or creative chat for: {user_query}"
+        with st.spinner("Aznikaa AI is thinking..."):
+            try:
+                genai.configure(api_key=api_key.strip())
+                model = genai.GenerativeModel("gemini-1.5-flash")
 
-                    response = model.generate_content(prompt)
+                if mode == "💻 IT & Coding Helper":
+                    prompt = f"You are Aznikaa AI, an expert IT instructor. Explain concepts clearly, write clean code, or fix bugs for: {user_query}"
+                elif mode == "📚 Education & Notes Tutor":
+                    prompt = f"You are Aznikaa AI, a patient academic tutor. Provide clear notes, step-by-step summaries, and easy explanations for: {user_query}"
+                else:
+                    prompt = f"You are Aznikaa AI, a fun, friendly, and witty companion. Provide funny stories, jokes, or creative chat for: {user_query}"
 
-                    st.success("Aznikaa AI Response:")
+                response = model.generate_content(prompt)
+
+                st.success("Aznikaa AI Response:")
+                st.write(response.text)
+            except Exception as err:
+                st.error(f"Error: {err}")
                     st.write(response.text)
                 except Exception as e:
                     st.error(f"Error: {e}")
