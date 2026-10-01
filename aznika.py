@@ -13,24 +13,31 @@ else:
 
     if st.button("Bhejein"):
         if user_input:
-            # Direct single request for debugging
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
-            headers = {"Content-Type": "application/json"}
-            payload = {"contents": [{"parts": [{"text": user_input}]}]}
+            # High-availability working models list
+            models = ["gemini-2.5-flash", "gemini-2.0-flash"]
+            success = False
             
             with st.spinner("AI response generate kar raha hai..."):
-                try:
-                    response = requests.post(url, json=payload, headers=headers)
-                    if response.status_code == 200:
-                        data = response.json()
-                        answer = data['candidates'][0]['content']['parts'][0]['text']
-                        st.write("### AI ka Jawab:")
-                        st.write(answer)
-                    else:
-                        st.write(f"**Status Code:** {response.status_code}")
-                        st.json(response.json())
-                except Exception as e:
-                    st.error(f"Error: {e}")
+                for model in models:
+                    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+                    headers = {"Content-Type": "application/json"}
+                    payload = {"contents": [{"parts": [{"text": user_input}]}]}
+                    
+                    try:
+                        response = requests.post(url, json=payload, headers=headers)
+                        if response.status_code == 200:
+                            data = response.json()
+                            answer = data['candidates'][0]['content']['parts'][0]['text']
+                            st.write("### AI ka Jawab:")
+                            st.write(answer)
+                            st.caption(f"Powered by: {model}")
+                            success = True
+                            break
+                    except Exception:
+                        continue
+                
+                if not success:
+                    st.error("API Response nahi mila. Please try again after a few moments!")
         else:
             st.warning("Pehle koi sawal toh likhein!")
 
@@ -39,6 +46,7 @@ admob_html = """
 <div style="text-align: center; margin-top: 20px;">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7585166010772057"
      crossorigin="anonymous"></script>
+    <!-- Aznikaa Banner -->
     <ins class="adsbygoogle"
      style="display:inline-block;width:320px;height:50px"
      data-ad-client="ca-pub-7585166010772057"
