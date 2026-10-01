@@ -14,8 +14,8 @@ else:
 
     if st.button("Bhejein"):
         if user_input:
-            # High demand (503) ke waqt fallback models
-            models_to_try = ["gemini-3.8-flash", "gemini-2.5-flash", "gemini-1.5-flash"]
+            # Sahi aur working models list
+            models_to_try = ["gemini-1.5-flash", "gemini-1.5-pro"]
             success = False
             
             with st.spinner("AI response generate kar raha hai..."):
@@ -34,7 +34,6 @@ else:
                             success = True
                             break
                         elif response.status_code in [503, 429]:
-                            # High demand ya rate limit par agli try karein
                             time.sleep(1)
                             continue
                     except Exception:
@@ -50,6 +49,7 @@ admob_html = """
 <div style="text-align: center; margin-top: 20px;">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7585166010772057"
      crossorigin="anonymous"></script>
+    <!-- Aznikaa Banner -->
     <ins class="adsbygoogle"
      style="display:inline-block;width:320px;height:50px"
      data-ad-client="ca-pub-7585166010772057"
