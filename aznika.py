@@ -37,7 +37,7 @@ if st.button("🚀 Ask Aznikaa AI"):
             with st.spinner("Aznikaa AI is thinking..."):
                 try:
                     genai.configure(api_key=api_key.strip())
-                    model = genai.GenerativeModel("gemini-2.0-flash")
+                    model = genai.GenerativeModel("gemini-3.8-flash")
                     
                     if mode == "💻 IT & Coding Helper":
                         prompt = f"You are Aznikaa AI, an expert IT instructor. Explain concepts clearly, write clean code, or fix bugs for: {user_query}"
