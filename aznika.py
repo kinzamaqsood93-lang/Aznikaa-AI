@@ -14,8 +14,8 @@ else:
 
     if st.button("Bhejein"):
         if user_input:
-            # Pehle 3.8 flash hi hit karega, traffic high hone par instant backup par jayega
-            models = ["gemini-3.8-flash", "gemini-1.5-flash"]
+            # High-availability models list
+            models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-3.8-flash"]
             success = False
             
             with st.spinner("Aznikaa AI aap ka jawab tayar kar raha hai..."):
@@ -31,7 +31,7 @@ else:
                             answer = data['candidates'][0]['content']['parts'][0]['text']
                             st.write("### AI ka Jawab:")
                             st.write(answer)
-                            st.caption(f"Model used: {model}")
+                            st.caption(f"Powered by: {model}")
                             success = True
                             break
                         elif response.status_code in [503, 429]:
