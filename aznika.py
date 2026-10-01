@@ -3,7 +3,7 @@ import requests
 
 st.title("Aznikaa AI")
 
-# Streamlit Secrets se API Key le rahe hain
+# Streamlit Secrets se API Key read kar rahe hain
 api_key = st.secrets.get("GEMINI_API_KEY")
 
 if not api_key:
@@ -13,8 +13,8 @@ else:
 
     if st.button("Bhejein"):
         if user_input:
-            # Updated to Latest Gemini Flash model
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
+            # Updated to gemini-3.8-flash as specified by user
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key={api_key}"
             headers = {"Content-Type": "application/json"}
             payload = {
                 "contents": [{
