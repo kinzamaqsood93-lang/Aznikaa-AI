@@ -14,35 +14,42 @@ else:
 
     if st.button("Bhejein"):
         if user_input:
-            with st.spinner("Aznikaa AI aap ka jawab tayar kar raha hai..."):
-                # Working exact Google SDK model paths
-                fallback_models = [
-                    "models/gemini-2.5-flash",
-                    "models/gemini-1.5-flash",
-                    "gemini-2.5-flash",
-                    "gemini-1.5-flash"
-                ]
-                
-                success = False
-                last_error = ""
-                
-                for model_name in fallback_models:
-                    try:
-                        model = genai.GenerativeModel(model_name)
-                        response = model.generate_content(user_input)
+            with st.spinner("Aznikaa AI response generate kar raha hai..."):
+                try:
+                    # Key ke liye active text-generation models dynamically fetch honge
+                    active_models = []
+                    for m in genai.list_models():
+                        if 'generateContent' in m.supported_generation_methods:
+                            active_models.append(m.name)
+                    
+                    if not active_models:
+                        st.error("Aapki API key ke sath koi valid text model active nahi hai. Key check karein!")
+                    else:
+                        # Pehla working model choose karega
+                        success = False
+                        last_err = ""
                         
-                        st.write("### AI ka Jawab:")
-                        st.write(response.text)
-                        st.caption(f"Powered by: {model_name}")
-                        success = True
-                        break
-                    except Exception as e:
-                        last_error = str(e)
-                        continue
-                
-                if not success:
-                    st.error(f"Error: {last_error}")
-                    st.info("Tip: Agar Quota Limit 429 aa raha hai, toh Google AI Studio se 1 nayi key bana kar Streamlit Secrets mein update karein!")
+                        for model_name in active_models:
+                            # Preferred model resolution
+                            try:
+                                model = genai.GenerativeModel(model_name)
+                                response = model.generate_content(user_input)
+                                
+                                st.write("### AI ka Jawab:")
+                                st.write(response.text)
+                                st.caption(f"Active Model: {model_name}")
+                                success = True
+                                break
+                            except Exception as model_err:
+                                last_err = str(model_err)
+                                continue
+                        
+                        if not success:
+                            st.error(f"Error: {last_err}")
+                            st.info("Tip: Agar 429 Rate Limit error ho, toh Google AI Studio se 1 new API Key bana kar Streamlit Secrets mein update karein.")
+
+                except Exception as e:
+                    st.error(f"Connection Error: {e}")
         else:
             st.warning("Pehle koi sawal toh likhein!")
 
