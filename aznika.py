@@ -36,7 +36,7 @@ if st.button("🚀 Ask Aznikaa AI"):
                 genai.configure(api_key=api_key.strip())
                 
                 # Updated Model Name
-                model = genai.GenerativeModel("gemini-3.8-flash")
+                model = genai.GenerativeModel("gemini-2.5-flash")
 
                 if mode == "💻 IT & Coding Helper":
                     prompt = f"You are Aznikaa AI, an expert IT instructor. Explain concepts clearly, write clean code, or fix bugs for: {user_query}"
@@ -49,5 +49,9 @@ if st.button("🚀 Ask Aznikaa AI"):
 
                 st.success("Aznikaa AI Response:")
                 st.write(response.text)
-            except Exception as err:
-                st.error(f"Error: {err}")
+                except Exception as e:
+    error_msg = str(e).lower()
+    if "429" in error_msg or "quota" in error_msg:
+        st.warning("⏳ AI server busy hai. Baraye meharbani 30 seconds baad dubara message bhejein!")
+    else:
+        st.error(f"Error: {e}")
