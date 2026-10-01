@@ -15,14 +15,17 @@ else:
     if st.button("Bhejein"):
         if user_input:
             with st.spinner("Aznikaa AI aap ka jawab tayar kar raha hai..."):
-                # Daily limit khatam hone par automatic doosra model use hoga
+                # Working exact Google SDK model paths
                 fallback_models = [
+                    "models/gemini-2.5-flash",
+                    "models/gemini-1.5-flash",
                     "gemini-2.5-flash",
-                    "gemini-1.5-flash",
-                    "gemini-3.8-flash"
+                    "gemini-1.5-flash"
                 ]
                 
                 success = False
+                last_error = ""
+                
                 for model_name in fallback_models:
                     try:
                         model = genai.GenerativeModel(model_name)
@@ -34,11 +37,12 @@ else:
                         success = True
                         break
                     except Exception as e:
-                        # Agar 429 quota error aaye toh next model try karega
+                        last_error = str(e)
                         continue
                 
                 if not success:
-                    st.error("Sabhi models ki daily limit poori ho chuki hai. Please kal dobara try karein ya nayi key lagayein!")
+                    st.error(f"Error: {last_error}")
+                    st.info("Tip: Agar Quota Limit 429 aa raha hai, toh Google AI Studio se 1 nayi key bana kar Streamlit Secrets mein update karein!")
         else:
             st.warning("Pehle koi sawal toh likhein!")
 
