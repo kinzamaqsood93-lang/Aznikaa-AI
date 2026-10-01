@@ -15,43 +15,30 @@ else:
     if st.button("Bhejein"):
         if user_input:
             with st.spinner("Aznikaa AI aap ka jawab tayar kar raha hai..."):
-                try:
-                    # Preferred models list in priority order
-                    preferred_models = [
-                        "models/gemini-3.8-flash",
-                        "models/gemini-2.5-flash",
-                        "models/gemini-2.0-flash",
-                        "models/gemini-1.5-flash"
-                    ]
-                    
-                    # Get available models for this key
-                    available_models = [
-                        m.name for m in genai.list_models() 
-                        if 'generateContent' in m.supported_generation_methods
-                    ]
-                    
-                    # Find the first available matching model
-                    selected_model = None
-                    for model_name in preferred_models:
-                        if model_name in available_models:
-                            selected_model = model_name
-                            break
-                    
-                    if not selected_model and available_models:
-                        selected_model = available_models[0]
-                    
-                    if selected_model:
-                        model = genai.GenerativeModel(selected_model)
+                # Daily limit khatam hone par automatic doosra model use hoga
+                fallback_models = [
+                    "gemini-2.5-flash",
+                    "gemini-1.5-flash",
+                    "gemini-3.8-flash"
+                ]
+                
+                success = False
+                for model_name in fallback_models:
+                    try:
+                        model = genai.GenerativeModel(model_name)
                         response = model.generate_content(user_input)
                         
                         st.write("### AI ka Jawab:")
                         st.write(response.text)
-                        st.caption(f"Active Model: {selected_model}")
-                    else:
-                        st.error("Koi working Gemini model nahi mila. Key status check karein.")
-
-                except Exception as e:
-                    st.error(f"Error aagaya: {e}")
+                        st.caption(f"Powered by: {model_name}")
+                        success = True
+                        break
+                    except Exception as e:
+                        # Agar 429 quota error aaye toh next model try karega
+                        continue
+                
+                if not success:
+                    st.error("Sabhi models ki daily limit poori ho chuki hai. Please kal dobara try karein ya nayi key lagayein!")
         else:
             st.warning("Pehle koi sawal toh likhein!")
 
