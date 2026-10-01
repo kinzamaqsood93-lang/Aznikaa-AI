@@ -34,21 +34,22 @@ if st.button("🚀 Ask Aznikaa AI"):
     elif not user_query.strip():
         st.warning("⚠️ Baraye meherbani koi sawal ya prompt enter karein!")
     else:
-        with st.spinner("Aznikaa AI is thinking..."):
-            try:
-                genai.configure(api_key=api_key.strip())
-             model = genai.GenerativeModel("gemini-2.0-flash")
-                
-                if mode == "💻 IT & Coding Helper":
-                    prompt = f"You are Aznikaa AI, an expert IT instructor. Explain concepts clearly, write clean code, or fix bugs for: {user_query}"
-                elif mode == "📚 Education & Notes Tutor":
-                    prompt = f"You are Aznikaa AI, a patient academic tutor. Provide clear notes, step-by-step summaries, and easy explanations for: {user_query}"
-                else:
-                    prompt = f"You are Aznikaa AI, a fun, friendly, and witty companion. Provide funny stories, jokes, or creative chat for: {user_query}"
+            with st.spinner("Aznikaa AI is thinking..."):
+                try:
+                    genai.configure(api_key=api_key.strip())
+                    model = genai.GenerativeModel("gemini-2.0-flash")
+                    
+                    if mode == "💻 IT & Coding Helper":
+                        prompt = f"You are Aznikaa AI, an expert IT instructor. Explain concepts clearly, write clean code, or fix bugs for: {user_query}"
+                    elif mode == "📚 Education & Notes Tutor":
+                        prompt = f"You are Aznikaa AI, a patient academic tutor. Provide clear notes, step-by-step summaries, and easy explanations for: {user_query}"
+                    else:
+                        prompt = f"You are Aznikaa AI, a fun, friendly, and witty companion. Provide funny stories, jokes, or creative chat for: {user_query}"
 
-                response = model.generate_content(prompt)
-                
-                st.success("Aznikaa AI Response:")
-                st.write(response.text)
-            except Exception as e:
+                    response = model.generate_content(prompt)
+
+                    st.success("Aznikaa AI Response:")
+                    st.write(response.text)
+                except Exception as e:
+                    st.error(f"Error: {e}")
                 st.error(f"Error: {e}")
