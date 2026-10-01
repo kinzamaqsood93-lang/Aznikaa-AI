@@ -31,27 +31,25 @@ if st.button("🚀 Ask Aznikaa AI"):
     elif not user_query.strip():
         st.warning("⚠️ Baraye meherbani koi sawal ya prompt enter karein!")
     else:
-        with st.spinner("Aznikaa AI is thinking..."):
+       with st.spinner("Aznikaa AI is thinking..."):
             try:
                 genai.configure(api_key=api_key.strip())
-                
-                # Updated Model Name
-                model = genai.GenerativeModel("gemini-2.5-flash")
+                model = genai.GenerativeModel("gemini-1.5-flash")
 
                 if mode == "💻 IT & Coding Helper":
                     prompt = f"You are Aznikaa AI, an expert IT instructor. Explain concepts clearly, write clean code, or fix bugs for: {user_query}"
                 elif mode == "📚 Education & Notes Tutor":
                     prompt = f"You are Aznikaa AI, a patient academic tutor. Provide clear notes, step-by-step summaries, and easy explanations for: {user_query}"
                 else:
-                    prompt = f"You are Aznikaa AI, a fun, friendly, and witty companion. Provide funny stories, jokes, or creative chat for: {user_query}"
+                    prompt = f"You are Aznikaa AI, a friendly and smart AI assistant. Answer clearly and helpfully to: {user_query}"
 
-                try:
-            response = model.generate_content(prompt)
-            st.success("Aznikaa AI Response:")
-            st.write(response.text)
-        except Exception as e:
-            error_msg = str(e).lower()
-            if "429" in error_msg or "quota" in error_msg:
-                st.warning("⏳ AI server busy hai. Baraye meharbani 30 seconds baad dubara message bhejein!")
-            else:
-                st.error(f"Error: {e}")
+                response = model.generate_content(prompt)
+                st.success("Aznikaa AI Response:")
+                st.write(response.text)
+
+            except Exception as e:
+                error_msg = str(e).lower()
+                if "429" in error_msg or "quota" in error_msg:
+                    st.warning("⏳ AI server busy hai. Baraye meharbani 30 seconds baad dubara message bhejein!")
+                else:
+                    st.error(f"Error: {e}")
