@@ -53,3 +53,23 @@ if st.button("🚀 Ask Aznikaa AI"):
                     st.warning("⏳ AI server busy hai. Baraye meharbani 30 seconds baad dubara message bhejein!")
                 else:
                     st.error(f"Error: {e}")
+
+import streamlit.components.v1 as components
+
+# AdMob Banner Integration (Free Method)
+admob_html = """
+<div style="text-align: center; margin-top: 20px;">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7585166010772057"
+            crossorigin="anonymous"></script>
+    <!-- Aznikaa Banner -->
+    <ins class="adsbygoogle"
+         style="display:inline-block;width:320px;height:50px"
+         data-ad-client="ca-pub-7585166010772057"
+         data-ad-slot="777795"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+"""
+
+components.html(admob_html, height=70)
