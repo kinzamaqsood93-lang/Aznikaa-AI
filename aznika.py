@@ -31,10 +31,10 @@ if st.button("🚀 Ask Aznikaa AI"):
     elif not user_query.strip():
         st.warning("⚠️ Baraye meherbani koi sawal ya prompt enter karein!")
     else:
-       with st.spinner("Aznikaa AI is thinking..."):
+     with st.spinner("Aznikaa AI is thinking..."):
             try:
                 genai.configure(api_key=api_key.strip())
-               model = genai.GenerativeModel("gemini-3.8-flash")
+                model = genai.GenerativeModel("gemini-3.8-flash")
 
                 if mode == "💻 IT & Coding Helper":
                     prompt = f"You are Aznikaa AI, an expert IT instructor. Explain concepts clearly, write clean code, or fix bugs for: {user_query}"
