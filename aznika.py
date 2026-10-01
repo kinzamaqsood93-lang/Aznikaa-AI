@@ -10,25 +10,52 @@ if not api_key:
     st.error("API Key nahi mili! Streamlit Secrets check karein.")
 else:
     genai.configure(api_key=api_key)
-    
     user_input = st.text_input("Aap ka sawal:")
 
     if st.button("Bhejein"):
         if user_input:
-            with st.spinner("AI response generate kar raha hai..."):
+            with st.spinner("Aznikaa AI aap ka jawab tayar kar raha hai..."):
                 try:
-                    # Official Gemini SDK model configuration
-                    model = genai.GenerativeModel('gemini-1.5-flash')
-                    response = model.generate_content(user_input)
+                    # Preferred models list in priority order
+                    preferred_models = [
+                        "models/gemini-3.8-flash",
+                        "models/gemini-2.5-flash",
+                        "models/gemini-2.0-flash",
+                        "models/gemini-1.5-flash"
+                    ]
                     
-                    st.write("### AI ka Jawab:")
-                    st.write(response.text)
+                    # Get available models for this key
+                    available_models = [
+                        m.name for m in genai.list_models() 
+                        if 'generateContent' in m.supported_generation_methods
+                    ]
+                    
+                    # Find the first available matching model
+                    selected_model = None
+                    for model_name in preferred_models:
+                        if model_name in available_models:
+                            selected_model = model_name
+                            break
+                    
+                    if not selected_model and available_models:
+                        selected_model = available_models[0]
+                    
+                    if selected_model:
+                        model = genai.GenerativeModel(selected_model)
+                        response = model.generate_content(user_input)
+                        
+                        st.write("### AI ka Jawab:")
+                        st.write(response.text)
+                        st.caption(f"Active Model: {selected_model}")
+                    else:
+                        st.error("Koi working Gemini model nahi mila. Key status check karein.")
+
                 except Exception as e:
                     st.error(f"Error aagaya: {e}")
         else:
             st.warning("Pehle koi sawal toh likhein!")
 
-# AdMob Banner Integration
+# AdMob / AdSense Banner Integration
 admob_html = """
 <div style="text-align: center; margin-top: 20px;">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7585166010772057"
